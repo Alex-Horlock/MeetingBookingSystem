@@ -1,0 +1,257 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "zupaTech Seat Booking System",
+    "version" : "1.0.0",
+    "title" : "Seat Booking API",
+    "contact" : {
+      "email" : "alexhorlock93@gmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "virtserver.swaggerhub.com",
+  "basePath" : "/Alex-Horlock/SeatBooking/1.0.0",
+  "tags" : [ {
+    "name" : "zupaDev",
+    "description" : "Secured zupaDev-only calls"
+  }, {
+    "name" : "zupaAdmin",
+    "description" : "Secured Admin-Only calls"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/seats" : {
+      "get" : {
+        "tags" : [ "zupaDev" ],
+        "summary" : "gets seats and their booking status",
+        "description" : "By passing in the row and column, you can search for\nall available seats in the system\n",
+        "operationId" : "getSeats",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "row",
+          "in" : "query",
+          "description" : "the row of the seat",
+          "required" : false,
+          "type" : "string",
+          "maxLength" : 1,
+          "minLength" : 1
+        }, {
+          "name" : "column",
+          "in" : "query",
+          "description" : "the column of the seat",
+          "required" : false,
+          "type" : "integer",
+          "maximum" : 10,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Seat"
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "zupaDev" ],
+        "summary" : "seat booking request",
+        "description" : "Requests a seat or seats to book (max 4)",
+        "operationId" : "bookSeatRequest",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "seatItem",
+          "description" : "Seat item to request",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Seat"
+            },
+            "minItems" : 1,
+            "maxItems" : 4
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "seat booked"
+          },
+          "400" : {
+            "description" : "invalid input, request invalid"
+          },
+          "409" : {
+            "description" : "the seat is already booked"
+          }
+        }
+      }
+    },
+    "/meetings" : {
+      "get" : {
+        "tags" : [ "zupaDev" ],
+        "summary" : "gets available meetings",
+        "description" : "returns all available meetings in system\n",
+        "operationId" : "getMeetings",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Meeting"
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "zupaAdmin" ],
+        "summary" : "creates a meeting",
+        "description" : "Create a Meeting",
+        "operationId" : "createMeeting",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "meeting",
+          "description" : "Meeting to add",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Meeting"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "meeting created"
+          },
+          "400" : {
+            "description" : "invalid input, request invalid"
+          },
+          "409" : {
+            "description" : "a meeting already exists with that id"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Seat" : {
+      "type" : "object",
+      "required" : [ "column", "email", "id", "isBooked", "meetingId", "name", "row" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Alex Horlock"
+        },
+        "email" : {
+          "type" : "string",
+          "format" : "email",
+          "example" : "yourName@example.com"
+        },
+        "row" : {
+          "type" : "string",
+          "example" : "a",
+          "minLength" : 1,
+          "maxLength" : 1
+        },
+        "column" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 1,
+          "minimum" : 1,
+          "maximum" : 10
+        },
+        "meetingId" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        },
+        "isBooked" : {
+          "type" : "boolean"
+        }
+      },
+      "example" : {
+        "name" : "Alex Horlock",
+        "column" : 1,
+        "meetingId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+        "isBooked" : true,
+        "id" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+        "row" : "a",
+        "email" : "yourName@example.com"
+      }
+    },
+    "Meeting" : {
+      "required" : [ "date", "id", "location", "seats" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        },
+        "organiser" : {
+          "type" : "string",
+          "example" : "Alex Horlock"
+        },
+        "date" : {
+          "type" : "string",
+          "format" : "date-time",
+          "example" : "2016-08-29T09:12:33.001Z"
+        },
+        "location" : {
+          "type" : "string",
+          "example" : "The Ritz, London"
+        },
+        "seats" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Seat"
+          }
+        }
+      },
+      "example" : {
+        "date" : "2016-08-29T09:12:33.001Z",
+        "organiser" : "Alex Horlock",
+        "location" : "The Ritz, London",
+        "id" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+        "seats" : [ {
+          "name" : "Alex Horlock",
+          "column" : 1,
+          "meetingId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "isBooked" : true,
+          "id" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "row" : "a",
+          "email" : "yourName@example.com"
+        }, {
+          "name" : "Alex Horlock",
+          "column" : 1,
+          "meetingId" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "isBooked" : true,
+          "id" : "d290f1ee-6c54-4b01-90e6-d701748f0851",
+          "row" : "a",
+          "email" : "yourName@example.com"
+        } ]
+      }
+    }
+  }
+}
