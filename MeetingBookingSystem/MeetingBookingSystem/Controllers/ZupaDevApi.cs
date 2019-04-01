@@ -63,7 +63,7 @@ namespace AlexHorlock.BookingSystem.Controllers
 
             
             if (requestedSeats.Count > 4)
-                return this.BadRequest(); // is this right?
+                return this.BadRequest("can't book more that 4 seats"); // is this right?
 
             // check if seats are booked
             foreach (Seat requestedSeat in requestedSeats)
@@ -73,7 +73,7 @@ namespace AlexHorlock.BookingSystem.Controllers
                     if (requestedSeat.Column == currentSeat.Column 
                     && requestedSeat.Row == currentSeat.Row)
                     {
-                        return this.BadRequest(); // is this right?
+                        return this.BadRequest("Seat is taken"); // is this right?
                     }
                 }
             }
@@ -129,6 +129,8 @@ namespace AlexHorlock.BookingSystem.Controllers
 
             if (meetingId != null)
                 return new OkObjectResult(_context.Seats.Where(x => x.MeetingId == meetingId));
+
+            // should return a 'no meetings for that id' message here...
 
             return new OkObjectResult(_context.Seats);
         }

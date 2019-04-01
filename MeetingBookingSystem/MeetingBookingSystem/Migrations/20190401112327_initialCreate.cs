@@ -30,8 +30,7 @@ namespace IO.Swagger.Migrations
                     Email = table.Column<string>(nullable: false),
                     Row = table.Column<string>(nullable: false),
                     Column = table.Column<int>(nullable: false),
-                    MeetingId = table.Column<Guid>(nullable: false),
-                    IsBooked = table.Column<bool>(nullable: false)
+                    MeetingId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {

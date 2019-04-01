@@ -30,7 +30,6 @@ namespace AlexHorlock.BookingSystem.Models
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [Required]
         [DataMember(Name="id")]
         public Guid? Id { get; set; }
 

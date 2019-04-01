@@ -79,8 +79,7 @@ namespace AlexHorlock.BookingSystem.Data
                         Email = "alexhorlock93@gmail.com",
                         Row = "a",
                         Column = 1,
-                        MeetingId = context.Meetings.FirstOrDefault().Id,
-                        IsBooked = true
+                        MeetingId = context.Meetings.FirstOrDefault().Id
                     },
 
                     new Seat
@@ -90,8 +89,7 @@ namespace AlexHorlock.BookingSystem.Data
                         Email = "cookieMonster@ilovecookie.com",
                         Row = "a",
                         Column = 2,
-                        MeetingId = context.Meetings.FirstOrDefault().Id,
-                        IsBooked = true
+                        MeetingId = context.Meetings.FirstOrDefault().Id
                     }
                 );
                 context.SaveChanges();

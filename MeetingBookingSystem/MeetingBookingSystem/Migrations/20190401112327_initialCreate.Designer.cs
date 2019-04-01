@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IO.Swagger.Migrations
 {
     [DbContext(typeof(MeetingDbContext))]
-    [Migration("20190401100755_initialCreate")]
+    [Migration("20190401112327_initialCreate")]
     partial class initialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,9 +45,6 @@ namespace IO.Swagger.Migrations
                         .IsRequired();
 
                     b.Property<string>("Email")
-                        .IsRequired();
-
-                    b.Property<bool?>("IsBooked")
                         .IsRequired();
 
                     b.Property<Guid?>("MeetingId")

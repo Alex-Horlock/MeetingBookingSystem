@@ -45,9 +45,6 @@ namespace IO.Swagger.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<bool?>("IsBooked")
-                        .IsRequired();
-
                     b.Property<Guid?>("MeetingId")
                         .IsRequired();
 
