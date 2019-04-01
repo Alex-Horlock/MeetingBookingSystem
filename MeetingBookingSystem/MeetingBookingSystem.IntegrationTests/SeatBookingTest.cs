@@ -17,7 +17,6 @@ namespace MeetingBookingSystem.IntegrationTests
         BookingSystemService _testBookingRepository;
         ZupaDevApiController _devController;
         
-
         public SeatBookingSystemTest()
         {
             // test with an in memory database
@@ -29,6 +28,7 @@ namespace MeetingBookingSystem.IntegrationTests
             _testBookingRepository = new BookingSystem(_context);
             _devController = new ZupaDevApiController(_testBookingRepository);
         }
+
         [Fact]
         public void DoesSystemRejectMoreThanFourSeatRequestsAtOnce()
         {
@@ -49,12 +49,6 @@ namespace MeetingBookingSystem.IntegrationTests
             var objectResponse = response as StatusCodeResult; 
 
             Assert.Equal(400, objectResponse.StatusCode);
-        }
-
-        [Fact]
-        public void DoesSystemRejectSeatRequestWithDuplicateSeats()
-        {
-            Assert.False(false);
         }
     }
 }

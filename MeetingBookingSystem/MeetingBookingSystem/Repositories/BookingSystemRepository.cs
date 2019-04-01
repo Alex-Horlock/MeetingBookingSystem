@@ -43,12 +43,11 @@ namespace AlexHorlock.BookingSystem.Repositories
                 httpStatusCode = 400;
                 return false;
             }
-                
 
             // check if seats are booked
             foreach (Seat requestedSeat in seatRequests)
             {
-                foreach (Seat currentSeat in _context.Seats)
+                foreach (Seat currentSeat in _context.Seats.Where(x => x.MeetingId == requestedSeat.MeetingId))
                 {
                     if (requestedSeat.Column == currentSeat.Column 
                     && requestedSeat.Row == currentSeat.Row)
@@ -64,8 +63,9 @@ namespace AlexHorlock.BookingSystem.Repositories
             {
                 foreach (Seat possibleDuplicateSeat in seatRequests)
                 {
-                    if (possibleDuplicateSeat.Column == requestedSeat.Column
-                    && possibleDuplicateSeat.Row == requestedSeat.Row)
+                    if (possibleDuplicateSeat.Id != requestedSeat.Id
+                        && possibleDuplicateSeat.Column == requestedSeat.Column
+                        && possibleDuplicateSeat.Row == requestedSeat.Row)
                     {
                         httpStatusCode = 400;
                         return false; // requested the same seat twice.
