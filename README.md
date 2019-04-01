@@ -5,6 +5,8 @@ An API implementation which allows users to view and book avaialble meetings and
 
 The system uses an ASP.Net core Web API which is specified using Swagger and then autocoded with their codegen tool.
 
+You can view the proposed API here: https://app.swaggerhub.com/apis/Alex-Horlock/SeatBooking/1.0.0
+
 The API allows basic users to GET meetings and current seat bookings and POST seat bookings. Admins can create new meetings.
 
 Swagger was chosen because I feel it is a great tool to communicate and interface clearly which is often one of the biggest issues when working with multiple teams on the same project. 
