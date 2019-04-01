@@ -21,16 +21,22 @@ using Microsoft.Extensions.Primitives;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using IO.Swagger.Attributes;
-using IO.Swagger.Models;
-
-namespace IO.Swagger.Controllers
+using AlexHorlock.BookingSystem.Attributes;
+using AlexHorlock.BookingSystem.Models;
+using AlexHorlock.BookingSystem.Data;
+namespace AlexHorlock.BookingSystem.Controllers
 { 
     /// <summary>
     /// 
     /// </summary>
     public class ZupaAdminApiController : Controller
     { 
+        private readonly MeetingDbContext _context;
+        public ZupaAdminApiController(MeetingDbContext context)
+        {
+            _context = context;
+        }
+
         /// <summary>
         /// creates a meeting
         /// </summary>
@@ -54,8 +60,14 @@ namespace IO.Swagger.Controllers
             //TODO: Uncomment the next line to return response 409 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(409);
 
+            if (meeting.Id == null)
+                meeting.Id = Guid.NewGuid();
 
-            throw new NotImplementedException();
+            _context.Meetings.Add(meeting);
+
+            _context.SaveChangesAsync();
+
+            return Ok(); // is this right?
         }
     }
 }

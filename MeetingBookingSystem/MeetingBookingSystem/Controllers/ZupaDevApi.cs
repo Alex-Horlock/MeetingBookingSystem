@@ -21,21 +21,28 @@ using Microsoft.Extensions.Primitives;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using IO.Swagger.Attributes;
-using IO.Swagger.Models;
+using AlexHorlock.BookingSystem.Attributes;
+using AlexHorlock.BookingSystem.Models;
+using AlexHorlock.BookingSystem.Data;
 
-namespace IO.Swagger.Controllers
+namespace AlexHorlock.BookingSystem.Controllers
 { 
     /// <summary>
     /// 
     /// </summary>
     public class ZupaDevApiController : Controller
     { 
+        private readonly MeetingDbContext _context;
+        public ZupaDevApiController(MeetingDbContext context)
+        {
+            _context = context;
+        }
+
         /// <summary>
         /// seat booking request
         /// </summary>
         /// <remarks>Requests a seat or seats to book (max 4)</remarks>
-        /// <param name="seatItem">Seat item to request</param>
+        /// <param name="requestedSeats">Seat to request</param>
         /// <response code="201">seat booked</response>
         /// <response code="400">invalid input, request invalid</response>
         /// <response code="409">the seat is already booked</response>
@@ -43,7 +50,7 @@ namespace IO.Swagger.Controllers
         [Route("/Alex-Horlock/SeatBooking/1.0.0/seats")]
         [ValidateModelState]
         [SwaggerOperation("BookSeatRequest")]
-        public virtual IActionResult BookSeatRequest([FromBody]List<Seat> seatItem)
+        public virtual IActionResult BookSeatRequest([FromBody]List<Seat> requestedSeats)
         { 
             //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(201);
@@ -54,8 +61,28 @@ namespace IO.Swagger.Controllers
             //TODO: Uncomment the next line to return response 409 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(409);
 
+            
+            if (requestedSeats.Count > 4)
+                return this.BadRequest(); // is this right?
 
-            throw new NotImplementedException();
+            // check if seats are booked
+            foreach (Seat requestedSeat in requestedSeats)
+            {
+                foreach (Seat currentSeat in _context.Seats)
+                {
+                    if (requestedSeat.Column == currentSeat.Column 
+                    && requestedSeat.Row == currentSeat.Row)
+                    {
+                        return this.BadRequest(); // is this right?
+                    }
+                }
+            }
+            
+            _context.Seats.AddRange(requestedSeats);
+
+            _context.SaveChangesAsync();
+
+            return Ok(); // is this right?
         }
 
         /// <summary>
@@ -77,22 +104,14 @@ namespace IO.Swagger.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400);
 
-            string exampleJson = null;
-            exampleJson = "[ {\n  \"date\" : \"2016-08-29T09:12:33.001Z\",\n  \"organiser\" : \"Alex Horlock\",\n  \"location\" : \"The Ritz, London\",\n  \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"seats\" : [ {\n    \"name\" : \"Alex Horlock\",\n    \"column\" : 1,\n    \"meetingId\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"isBooked\" : true,\n    \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"row\" : \"a\",\n    \"email\" : \"yourName@example.com\"\n  }, {\n    \"name\" : \"Alex Horlock\",\n    \"column\" : 1,\n    \"meetingId\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"isBooked\" : true,\n    \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"row\" : \"a\",\n    \"email\" : \"yourName@example.com\"\n  } ]\n}, {\n  \"date\" : \"2016-08-29T09:12:33.001Z\",\n  \"organiser\" : \"Alex Horlock\",\n  \"location\" : \"The Ritz, London\",\n  \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"seats\" : [ {\n    \"name\" : \"Alex Horlock\",\n    \"column\" : 1,\n    \"meetingId\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"isBooked\" : true,\n    \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"row\" : \"a\",\n    \"email\" : \"yourName@example.com\"\n  }, {\n    \"name\" : \"Alex Horlock\",\n    \"column\" : 1,\n    \"meetingId\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"isBooked\" : true,\n    \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n    \"row\" : \"a\",\n    \"email\" : \"yourName@example.com\"\n  } ]\n} ]";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<List<Meeting>>(exampleJson)
-            : default(List<Meeting>);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+             return new OkObjectResult(_context.Meetings);
         }
 
         /// <summary>
         /// gets seats and their booking status
         /// </summary>
         /// <remarks>By passing in the row and column, you can search for all available seats in the system </remarks>
-        /// <param name="row">the row of the seat</param>
-        /// <param name="column">the column of the seat</param>
+        /// <param name="meetingId">the id of the meeting</param>
         /// <response code="200">search results matching criteria</response>
         /// <response code="400">bad input parameter</response>
         [HttpGet]
@@ -100,7 +119,7 @@ namespace IO.Swagger.Controllers
         [ValidateModelState]
         [SwaggerOperation("GetSeats")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<Seat>), description: "search results matching criteria")]
-        public virtual IActionResult GetSeats([FromQuery][StringLength(1, MinimumLength=1)]string row, [FromQuery][Range(1, 10)]int? column)
+        public virtual IActionResult GetSeats([FromQuery]Guid meetingId)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(List<Seat>));
@@ -108,14 +127,10 @@ namespace IO.Swagger.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400);
 
-            string exampleJson = null;
-            exampleJson = "[ {\n  \"name\" : \"Alex Horlock\",\n  \"column\" : 1,\n  \"meetingId\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"isBooked\" : true,\n  \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"row\" : \"a\",\n  \"email\" : \"yourName@example.com\"\n}, {\n  \"name\" : \"Alex Horlock\",\n  \"column\" : 1,\n  \"meetingId\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"isBooked\" : true,\n  \"id\" : \"d290f1ee-6c54-4b01-90e6-d701748f0851\",\n  \"row\" : \"a\",\n  \"email\" : \"yourName@example.com\"\n} ]";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<List<Seat>>(exampleJson)
-            : default(List<Seat>);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            if (meetingId != null)
+                return new OkObjectResult(_context.Seats.Where(x => x.MeetingId == meetingId));
+
+            return new OkObjectResult(_context.Seats);
         }
     }
 }

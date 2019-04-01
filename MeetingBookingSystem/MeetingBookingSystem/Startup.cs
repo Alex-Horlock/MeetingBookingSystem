@@ -15,13 +15,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using IO.Swagger.Filters;
-
-namespace IO.Swagger
+using AlexHorlock.BookingSystem.Filters;
+using AlexHorlock.BookingSystem.Data;
+namespace AlexHorlock.BookingSystem
 {
     /// <summary>
     /// Startup
@@ -59,6 +60,10 @@ namespace IO.Swagger
                         CamelCaseText = true
                     });
                 });
+            
+            services.AddDbContext<MeetingDbContext>(options =>
+                options.UseSqlite(
+                    Configuration.GetConnectionString("DefaultConnection")));
 
             services
                 .AddSwaggerGen(c =>

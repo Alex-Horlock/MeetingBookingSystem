@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using AlexHorlock.BookingSystem.Data;
 
-namespace IO.Swagger
+namespace AlexHorlock.BookingSystem
 {
     /// <summary>
     /// Program
@@ -20,14 +25,36 @@ namespace IO.Swagger
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            var host = BuildWebHost(args);
+            
+
+            // test seeding database
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var context = services.GetRequiredService<MeetingDbContext>();
+                    context.Database.Migrate();
+                    SeedData.SeedMeetings(services);
+                    SeedData.SeedSeats(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred seeding the DB.");
+                }
+            }
+
+            host.Run();
         }
 
         /// <summary>
         /// Build Web Host
         /// </summary>
         /// <param name="args"></param>
-        /// <returns>Webhost</returns>
+        /// <returns>WebhostBuilder</returns>
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()

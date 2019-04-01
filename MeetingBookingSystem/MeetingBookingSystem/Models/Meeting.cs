@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace IO.Swagger.Models
+namespace AlexHorlock.BookingSystem.Models
 { 
     /// <summary>
     /// 
@@ -54,12 +54,6 @@ namespace IO.Swagger.Models
         [DataMember(Name="location")]
         public string Location { get; set; }
 
-        /// <summary>
-        /// Gets or Sets Seats
-        /// </summary>
-        [Required]
-        [DataMember(Name="seats")]
-        public List<Seat> Seats { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -73,7 +67,6 @@ namespace IO.Swagger.Models
             sb.Append("  Organiser: ").Append(Organiser).Append("\n");
             sb.Append("  Date: ").Append(Date).Append("\n");
             sb.Append("  Location: ").Append(Location).Append("\n");
-            sb.Append("  Seats: ").Append(Seats).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -129,11 +122,6 @@ namespace IO.Swagger.Models
                     Location == other.Location ||
                     Location != null &&
                     Location.Equals(other.Location)
-                ) && 
-                (
-                    Seats == other.Seats ||
-                    Seats != null &&
-                    Seats.SequenceEqual(other.Seats)
                 );
         }
 
@@ -155,8 +143,6 @@ namespace IO.Swagger.Models
                     hashCode = hashCode * 59 + Date.GetHashCode();
                     if (Location != null)
                     hashCode = hashCode * 59 + Location.GetHashCode();
-                    if (Seats != null)
-                    hashCode = hashCode * 59 + Seats.GetHashCode();
                 return hashCode;
             }
         }

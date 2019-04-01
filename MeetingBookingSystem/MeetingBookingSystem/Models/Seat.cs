@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace IO.Swagger.Models
+namespace AlexHorlock.BookingSystem.Models
 { 
     /// <summary>
     /// 
@@ -30,7 +30,6 @@ namespace IO.Swagger.Models
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [Required]
         [DataMember(Name="id")]
         public Guid? Id { get; set; }
 
@@ -70,13 +69,6 @@ namespace IO.Swagger.Models
         public Guid? MeetingId { get; set; }
 
         /// <summary>
-        /// Gets or Sets IsBooked
-        /// </summary>
-        [Required]
-        [DataMember(Name="isBooked")]
-        public bool? IsBooked { get; set; }
-
-        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -90,7 +82,6 @@ namespace IO.Swagger.Models
             sb.Append("  Row: ").Append(Row).Append("\n");
             sb.Append("  Column: ").Append(Column).Append("\n");
             sb.Append("  MeetingId: ").Append(MeetingId).Append("\n");
-            sb.Append("  IsBooked: ").Append(IsBooked).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -156,11 +147,6 @@ namespace IO.Swagger.Models
                     MeetingId == other.MeetingId ||
                     MeetingId != null &&
                     MeetingId.Equals(other.MeetingId)
-                ) && 
-                (
-                    IsBooked == other.IsBooked ||
-                    IsBooked != null &&
-                    IsBooked.Equals(other.IsBooked)
                 );
         }
 
@@ -186,8 +172,6 @@ namespace IO.Swagger.Models
                     hashCode = hashCode * 59 + Column.GetHashCode();
                     if (MeetingId != null)
                     hashCode = hashCode * 59 + MeetingId.GetHashCode();
-                    if (IsBooked != null)
-                    hashCode = hashCode * 59 + IsBooked.GetHashCode();
                 return hashCode;
             }
         }
