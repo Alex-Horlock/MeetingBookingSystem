@@ -24,6 +24,7 @@ using System.ComponentModel.DataAnnotations;
 using AlexHorlock.BookingSystem.Attributes;
 using AlexHorlock.BookingSystem.Models;
 using AlexHorlock.BookingSystem.Data;
+using AlexHorlock.BookingSystem.Repositories;
 
 namespace AlexHorlock.BookingSystem.Controllers
 { 
@@ -32,57 +33,29 @@ namespace AlexHorlock.BookingSystem.Controllers
     /// </summary>
     public class ZupaDevApiController : Controller
     { 
-        private readonly MeetingDbContext _context;
-        public ZupaDevApiController(MeetingDbContext context)
+        private readonly IBookingSystemService _bookingSystem;
+        public ZupaDevApiController(IBookingSystemService bookingSystem)
         {
-            _context = context;
+            _bookingSystem = bookingSystem;
         }
 
         /// <summary>
         /// seat booking request
         /// </summary>
         /// <remarks>Requests a seat or seats to book (max 4)</remarks>
-        /// <param name="requestedSeats">Seat to request</param>
-        /// <response code="201">seat booked</response>
+        /// <param name="seatRequests">Seat to request</param>
+        /// <response code="201">seats booked</response>
         /// <response code="400">invalid input, request invalid</response>
         /// <response code="409">the seat is already booked</response>
         [HttpPost]
         [Route("/Alex-Horlock/SeatBooking/1.0.0/seats")]
         [ValidateModelState]
         [SwaggerOperation("BookSeatRequest")]
-        public virtual IActionResult BookSeatRequest([FromBody]List<Seat> requestedSeats)
-        { 
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201);
-
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
-
-            //TODO: Uncomment the next line to return response 409 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(409);
-
+        public virtual IActionResult BookSeatRequest([FromBody]List<Seat> seatRequests)
+        {      
+            _bookingSystem.AddSeats(seatRequests, out int httpStatusCode);
             
-            if (requestedSeats.Count > 4)
-                return this.BadRequest("can't book more that 4 seats"); // is this right?
-
-            // check if seats are booked
-            foreach (Seat requestedSeat in requestedSeats)
-            {
-                foreach (Seat currentSeat in _context.Seats)
-                {
-                    if (requestedSeat.Column == currentSeat.Column 
-                    && requestedSeat.Row == currentSeat.Row)
-                    {
-                        return this.BadRequest("Seat is taken"); // is this right?
-                    }
-                }
-            }
-            
-            _context.Seats.AddRange(requestedSeats);
-
-            _context.SaveChangesAsync();
-
-            return Ok(); // is this right?
+            return StatusCode(httpStatusCode); 
         }
 
         /// <summary>
@@ -98,13 +71,8 @@ namespace AlexHorlock.BookingSystem.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(List<Meeting>), description: "search results matching criteria")]
         public virtual IActionResult GetMeetings()
         { 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(List<Meeting>));
-
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
-
-             return new OkObjectResult(_context.Meetings);
+             IEnumerable<Meeting> meetings = _bookingSystem.GetMeetings();
+             return StatusCode(200, meetings);
         }
 
         /// <summary>
@@ -121,18 +89,8 @@ namespace AlexHorlock.BookingSystem.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(List<Seat>), description: "search results matching criteria")]
         public virtual IActionResult GetSeats([FromQuery]Guid meetingId)
         { 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(List<Seat>));
-
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
-
-            if (meetingId != null)
-                return new OkObjectResult(_context.Seats.Where(x => x.MeetingId == meetingId));
-
-            // should return a 'no meetings for that id' message here...
-
-            return new OkObjectResult(_context.Seats);
+            IEnumerable<Seat> seats = _bookingSystem.GetSeats(meetingId);
+            return StatusCode(200, seats);
         }
     }
 }

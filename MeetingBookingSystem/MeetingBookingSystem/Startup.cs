@@ -22,6 +22,9 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using AlexHorlock.BookingSystem.Filters;
 using AlexHorlock.BookingSystem.Data;
+using AlexHorlock.BookingSystem.Repositories;
+
+
 namespace AlexHorlock.BookingSystem
 {
     /// <summary>
@@ -64,6 +67,8 @@ namespace AlexHorlock.BookingSystem
             services.AddDbContext<MeetingDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IBookingSystemService, BookingSystemService>();
 
             services
                 .AddSwaggerGen(c =>

@@ -24,6 +24,8 @@ using System.ComponentModel.DataAnnotations;
 using AlexHorlock.BookingSystem.Attributes;
 using AlexHorlock.BookingSystem.Models;
 using AlexHorlock.BookingSystem.Data;
+using AlexHorlock.BookingSystem.Repositories;
+
 namespace AlexHorlock.BookingSystem.Controllers
 { 
     /// <summary>
@@ -31,10 +33,11 @@ namespace AlexHorlock.BookingSystem.Controllers
     /// </summary>
     public class ZupaAdminApiController : Controller
     { 
-        private readonly MeetingDbContext _context;
-        public ZupaAdminApiController(MeetingDbContext context)
+        private readonly IBookingSystemService _bookingSystem;
+
+        public ZupaAdminApiController(IBookingSystemService bookingSystem)
         {
-            _context = context;
+            _bookingSystem = bookingSystem;
         }
 
         /// <summary>
@@ -51,23 +54,9 @@ namespace AlexHorlock.BookingSystem.Controllers
         [SwaggerOperation("CreateMeeting")]
         public virtual IActionResult CreateMeeting([FromBody]Meeting meeting)
         { 
-            //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(201);
-
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400);
-
-            //TODO: Uncomment the next line to return response 409 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(409);
-
-            if (meeting.Id == null)
-                meeting.Id = Guid.NewGuid();
-
-            _context.Meetings.Add(meeting);
-
-            _context.SaveChangesAsync();
-
-            return Ok(); // is this right?
+            _bookingSystem.AddMeeting(meeting, out int httpStatusCode);
+            
+            return StatusCode(httpStatusCode);
         }
     }
 }
