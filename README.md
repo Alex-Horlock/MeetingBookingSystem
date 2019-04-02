@@ -19,4 +19,4 @@ Price could be added simply by adding another field to the 'Seat' class but I ha
 
 # Review 
 
-This was the first API I've ever made so it was a bit of a learning curve, I am still a little unsure about some of the best practice in ASP.Net but I feel I made some good general decisions and have produced a robust demonstration which fulfills all the requirements.
+This was the first web API I've made so it was a bit of a learning curve, I am still a little unsure about some of the best practice in ASP.Net but I feel I made some good general decisions and have produced a robust demonstration which fulfills all the requirements.
