@@ -25,7 +25,7 @@ namespace MeetingBookingSystem.IntegrationTests
                 .Options;
 
             _context = new MeetingDbContext(options);
-            _testBookingRepository = new BookingSystem(_context);
+            _testBookingRepository = new BookingSystemService(_context);
             _devController = new ZupaDevApiController(_testBookingRepository);
         }
 
